@@ -19,7 +19,7 @@ const startServer = async () => {
   const server = http.createServer(app)
 
   const corsOptions = {
-    origin: ['http://localhost:3000', 'http://103.171.84.134:3001'],
+    origin: ['http://localhost:3003', 'http://103.171.84.134:3003'],
     methods:["GET" , "POST" , "PUT", "DELETE"],
     credentials: true,
     optionsSuccessStatus: 200,
