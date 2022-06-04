@@ -1,0 +1,42 @@
+version: '3.7'
+services:
+  # smartdmi_frontend:
+  #   # build: 
+  #   #   context: .
+  #   #   dockerfile: ../sm_ems_fe/Dockerfile
+  #   # volumes:
+  #   #   - ../sm_ems_fe:/app
+  #   image: tolhah/smartdmi_frontend:1.0.0
+  #   container_name: smartdmi_frontend
+  #   ports:
+  #     - 4000:4000
+  #   depends_on:
+  #     - smartdmi_backend
+
+  # smartdmi_backend:
+  #   # build: .
+  #   # volumes:
+  #   #   - .:/app
+  #   image: tolhah/smartdmi_backend:1.0.0
+  #   container_name: smartdmi_backend
+  #   ports:
+  #     - 5001:5001
+  #   depends_on:
+  #     - smartdmi_db
+
+  smartdmi_db:
+    image: mariadb:10.5.8
+    container_name: smartdmi_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ems
+      MYSQL_PASSWORD: P@ssw0rd123!@#
+      MYSQL_ROOT_PASSWORD: P@ssw0rd123!@#
+    volumes:
+      - .dbdata:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+networks:
+  my-network:
+    # driver: bridge

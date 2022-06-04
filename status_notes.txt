@@ -1,0 +1,42 @@
+Packing & Filtration Status
+1: Draft        
+2: Dikirim      (tampilkan ke FO & AO)
+3: Diperiksa    (tampilkan ke AO & MO)
+4: Diperbaiki   (tampilkan ke MO)
+5: Selesai      
+
+nb: MR & QFS bisa melihat data dengan semua status
+
+
+PACKING
+
+fo_condition
+1: OK                       [bagus]
+0: Tidak OK                 [tdk bagus]
+null: Belum dicek
+not null: Sudah dicek
+
+ao_conclusion
+1: Tidak perlu perbaikan    [bagus]
+0: Perlu perbaikan          [tdk bagus]
+
+FO: menampilkan data dgn (status = 1 atau 2)
+AO: menampilkan data dgn (status = 2 atau 3) dan fo_condition = 0
+MO: menampilkan data dgn (status = 3 atau 4) dan ao_conclusion = 0
+MR & QFS: menampilkan data semua status dan kondisi
+
+
+FILTRATION
+
+fo_filter_condition
+1: OK                       [bagus]         (tampilkan ke FO)
+0: Tidak OK                 [tdk bagus]     (tampilkan ke FO & AO)
+
+ao_conclusion
+1: Tidak perlu perbaikan    [bagus]         (tampilkan ke AO)
+0: Perlu perbaikan          [tdk bagus]     (tampilkan ke AO & MO)
+
+FO: menampilkan data dgn (status = 1 atau 2)
+AO: menampilkan data dgn (status = 2, 3, 4 atau 5) dan fo_filter_condition = 0
+MR & QFS: menampilkan data semua status dan kondisi
+
