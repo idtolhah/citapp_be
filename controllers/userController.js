@@ -247,6 +247,9 @@ const putArray = asyncHandler(async (req, res) => {
       if(req.params.entity == 'languages') data = { languages: array }
       if(req.params.entity == 'hobbies') data = { hobbies: array }
       if(req.params.entity == 'contacts') data = { contacts: array }
+      if(req.params.entity == 'projects') data = { projects: array }
+      if(req.params.entity == 'experiences') data = { experiences: array }
+      if(req.params.entity == 'educations') data = { educations: array }
 
       const updatedUser = await User.update(data, {
           where: {id: req.params.id}
@@ -351,9 +354,17 @@ const getArray = asyncHandler(async (req, res) => {
       user = await User.findByPk(req.params.id, {attributes: ['contacts']})
       data = JSON.parse(user.contacts) || []
     }
-    if(req.params.entity == 'activities') {
-      user = await User.findByPk(req.params.id, {attributes: ['activities']})
-      data = JSON.parse(user.activities) || []
+    if(req.params.entity == 'projects') {
+      user = await User.findByPk(req.params.id, {attributes: ['projects']})
+      data = JSON.parse(user.projects) || []
+    }
+    if(req.params.entity == 'experiences') {
+      user = await User.findByPk(req.params.id, {attributes: ['experiences']})
+      data = JSON.parse(user.experiences) || []
+    }
+    if(req.params.entity == 'educations') {
+      user = await User.findByPk(req.params.id, {attributes: ['educations']})
+      data = JSON.parse(user.educations) || []
     }
 
     if(user.length == 0) throw new Error("User does not exist!")

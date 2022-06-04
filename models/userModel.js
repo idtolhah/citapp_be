@@ -61,7 +61,15 @@ const User = db.define('users', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  activities: {
+  projects: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  experiences: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  educations: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
