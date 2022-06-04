@@ -297,13 +297,14 @@ const getImage = asyncHandler(async (req, res) => {
 // @access  Public
 const getBasicInfo = asyncHandler(async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id, {attributes: ['name', 'bio', 'gender', 'createdAt']})
+    const user = await User.findByPk(req.params.id, {attributes: ['name', 'bio', 'gender', 'email', 'createdAt']})
     if(user.length == 0) throw new Error("User does not exist!")
 
     const data = {
       fullname: user.name,
-      bio: user.name,
+      bio: user.bio,
       gender: user.gender,
+      email: user.email,
       createdAt: user.createdAt,
     }
 
