@@ -6,6 +6,7 @@ import {
   getArray,
   getBasicInfo,
   getImage,
+  getUsersByIds,
   logout,
   postUser,
   putArray,
@@ -17,6 +18,7 @@ import { protect } from '../middleware/authMiddleware.js'
 
 router.route('/')
   .post(postUser)
+  .get(getUsersByIds)
 router.route('/:id/image')
   .put(protect, putImage)
   .get(getImage)
@@ -26,6 +28,10 @@ router.route('/:id/basic')
 router.route('/:id/:entity')
   .put(protect, putArray)
   .get(getArray)
+router.route('/:id/:entity/:entityid')
+  .put(protect, putArray)
+router.route('/:id/:entity/:entityid/:operation')
+  .put(protect, putArray)
 router.route('/login')
   .post(authUser) // login
 router.route('/register')

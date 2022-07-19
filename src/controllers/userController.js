@@ -17,8 +17,8 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ where: { email }})
 
   if (user && (await matchPassword(password, user.password))) {
-    const token = generateToken(user.id, user.is_admin, 'token')
-    const refresh = generateToken(user.id, user.is_admin, 'refresh')
+    const token = generateToken(user.id, user.is_admin, user.name, 'token')
+    const refresh = generateToken(user.id, user.is_admin, user.name, 'refresh')
     tokenList[refresh] = token
 
     res.cookie("rt", refresh, {
@@ -37,8 +37,8 @@ const authUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         is_admin: user.is_admin,
-        // token: generateToken(user.id, 'token'),
-        refresh: generateToken(user.id, 'refresh'),
+        token,
+        refresh,
       }
     })
   } else {
@@ -56,7 +56,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @access  Public
 const checkToken = asyncHandler(async (req, res) => {
   try {
-    const refresh = req.cookies.rt
+    const refresh = req.cookies.rt  // refresh token ambil dari cookie rt
     const token = tokenList[refresh]
     verifyToken(token, 'token')
 
@@ -81,7 +81,7 @@ const checkToken = asyncHandler(async (req, res) => {
 // @access  Private
 const refreshToken = asyncHandler(async (req, res) => {
   try {
-    const refresh = req.cookies.rt
+    const refresh = req.cookies.rt  // refresh token ambil dari cookie rt
     verifyToken(refresh, 'refresh')
 
     res.status(200)
@@ -107,7 +107,7 @@ const refreshToken = asyncHandler(async (req, res) => {
 // @access  Private
 const logout = asyncHandler(async (req, res) => {
   try {
-    const refresh = req.cookies.rt
+    const refresh = req.cookies.rt  // refresh token ambil dari cookie rt
     verifyToken(refresh, 'refresh')
     
     delete tokenList[refresh]
@@ -146,6 +146,7 @@ const postUser = asyncHandler(async (req, res) => {
           name: fullname,
           email,
           password: await hash(password),
+          is_admin: req.body.is_admin,
       })
   
       res.status(201)
@@ -238,7 +239,7 @@ const putBasicInfo = asyncHandler(async (req, res) => {
 const putArray = asyncHandler(async (req, res) => {
   try {
       let array = req.body.array
-      if(!array || array == '') throw new Error('array is required')
+      // if(!array || array == '') throw new Error('array is required')
 
       let data = {}
       array = JSON.stringify(array)
@@ -247,9 +248,22 @@ const putArray = asyncHandler(async (req, res) => {
       if(req.params.entity == 'languages') data = { languages: array }
       if(req.params.entity == 'hobbies') data = { hobbies: array }
       if(req.params.entity == 'contacts') data = { contacts: array }
-      if(req.params.entity == 'projects') data = { projects: array }
       if(req.params.entity == 'experiences') data = { experiences: array }
       if(req.params.entity == 'educations') data = { educations: array }
+      if(req.params.entity == 'projects') {
+        const user = await User.findByPk(req.params.id, {attributes: ['projects']})
+        let projects = JSON.parse(user.projects) || []
+        array = JSON.parse(array)
+
+        if(req.params.entityid) {
+          projects = projects.filter(item => item.id !== array[0].id);
+        }
+        if(req.params.operation != 'delete') {
+          projects.push(array[0])
+        }
+
+        data = { projects: JSON.stringify(projects) }
+      }
 
       const updatedUser = await User.update(data, {
           where: {id: req.params.id}
@@ -385,6 +399,31 @@ const getArray = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc    Get users by ids
+// @route   GET /api/users?ids={id},{id},{id}
+// @access  Public
+const getUsersByIds = asyncHandler(async (req, res) => {
+  try {
+    const ids = req.query.ids.split(',')
+    console.log(ids)
+    const users = await User.findAll({where: {id: ids}, attributes: ['id', 'name']})
+
+    res.status(200)
+    res.json({
+      status: SUCCESS,
+      message: DATA_LOADED,
+      data: users,
+    })
+  } catch(err) {
+    res.status(401)
+    res.json({
+      status: FAILED,
+      message: "" + err,
+      data: null,
+    })
+  }
+})
+
 export {
   authUser,
   postUser,
@@ -396,5 +435,6 @@ export {
   getArray,
   checkToken,
   refreshToken,
+  getUsersByIds,
   logout,
 }

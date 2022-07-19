@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 const { DataTypes } = Sequelize;
 
 // Define schema
-// @table   users
+// @table users
 const User = db.define('users', {
   id: {
     type: DataTypes.INTEGER.UNSIGNED,

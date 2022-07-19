@@ -8,6 +8,7 @@ import morgan from 'morgan'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
 import { connectDB, syncDB } from './config/db.js'
 import userRoutes from './routes/userRoutes.js'
+import peopleRoutes from './routes/peopleRoutes.js'
 import cookieParser from 'cookie-parser'
 
 const startServer = async () => {
@@ -17,9 +18,15 @@ const startServer = async () => {
 
   const app = express()
   const server = http.createServer(app)
-
+  
   const corsOptions = {
-    origin: ['http://localhost:3003', 'http://103.171.84.134:3003'],
+    origin: [
+      'http://localhost:3000', 
+      'http://localhost:3003', 
+      'http://localhost:3004', 
+      'http://localhost:3005', 
+      'http://localhost:3006',
+    ],
     methods:["GET" , "POST" , "PUT", "DELETE"],
     credentials: true,
     optionsSuccessStatus: 200,
@@ -31,9 +38,9 @@ const startServer = async () => {
   app.use(cookieParser());
 
   app.use('/api/users', userRoutes)
-  app.get('/', (req, res) => {
-    res.send('API is running....')
-  })
+  app.use('/api/people', peopleRoutes)
+  app.get('/', (_, res) => res.send('API is running....'))
+  
   app.use(notFound)
   app.use(errorHandler)
   
