@@ -7,6 +7,10 @@ const { DataTypes } = Sequelize;
 // Define schema
 // @table profiles
 const Profile = db.define('profiles', {
+    image: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
     bio: {
         type: DataTypes.STRING(250),
         allowNull: true,
@@ -48,9 +52,18 @@ const Profile = db.define('profiles', {
         type: DataTypes.TEXT,
         allowNull: true,
     },
+    // people
+    position: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+    },
   },{
-        freezeTableName: true,
+    freezeTableName: true,
 }, );
+
+User.hasOne(Profile, {
+    foreignKey: 'user_id',
+});
 
 Profile.belongsTo(User, {
     foreignKey: 'user_id',

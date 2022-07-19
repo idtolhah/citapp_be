@@ -2,6 +2,8 @@ import dotenv from 'dotenv'
 import db, { connectDB } from './config/db.js'
 import User from './models/userModel.js'
 import users from './data/users.js'
+import Profile from './models/profileModel.js'
+import profiles from './data/profiles.js'
 
 dotenv.config()
 connectDB()
@@ -14,7 +16,7 @@ const importData = async () => {
 
     // Master
     await User.bulkCreate(users)
-    console.log('Master Data Imported!')
+    await Profile.bulkCreate(profiles)
     
     console.log('All dummy data Imported!')
 

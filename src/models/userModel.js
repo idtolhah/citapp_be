@@ -26,56 +26,9 @@ const User = db.define('users', {
     allowNull: false,
     defaultValue: false
   },
-  // image
-  image: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  // basic info
   name: {
     type: DataTypes.STRING(50),
     allowNull: false,
-  },
-  bio: {
-    type: DataTypes.STRING(250),
-    allowNull: true,
-  },
-  gender: {
-    type: DataTypes.STRING(1),
-    allowNull: true,
-  },
-  // array
-  achievements: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  skills: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  languages: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  hobbies: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  projects: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  experiences: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  educations: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  contacts: {
-    type: DataTypes.TEXT,
-    allowNull: true,
   },
 },{
   freezeTableName: true,

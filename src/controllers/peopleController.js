@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler'
 import { DATA_LOADED, FAILED, SUCCESS } from '../config/constants.js'
+import Profile from '../models/profileModel.js'
 import User from '../models/userModel.js'
 
 // @desc    Get people
@@ -17,11 +18,18 @@ const getPeople = asyncHandler(async (req, res) => {
         if(req.query.sortby) sortBy = req.query.sortby
         if(req.query.sortdirection) sortDirection = req.query.sortdirection
         var sort = [sortBy, sortDirection]
-        
+
         const users = await User.findAll({
-            where: condition,
-            attributes: ['id', 'name', 'position', 'createdAt'], 
-            order: [sort]
+            attributes: ['id', 'name', 'createdAt'],
+            include: [
+                { 
+                    model: Profile, 
+                    where: condition, 
+                    attributes: ['position'], 
+                },
+            ],
+            order: [sort],
+            raw: true,
         })
     
         res.status(200)
@@ -45,7 +53,7 @@ const getPeople = asyncHandler(async (req, res) => {
 // @access  Private
 const getPositions = asyncHandler(async (req, res) => {
     try {        
-        const positions = await User.findAll({
+        const positions = await Profile.findAll({
             attributes: ['position'], 
             group: ['position'],
             order: [ ['position', 'ASC'] ]
