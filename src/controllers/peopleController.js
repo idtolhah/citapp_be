@@ -93,16 +93,16 @@ const getPersonById = asyncHandler(async (req, res) => {
         const user = await User.findByPk(id, {attributes: ['id', 'name', 'email', 'createdAt']})
 
         // get profile data
-        const profile = await Profile.findOne({where: {id}, attributes: ['position','educations']})
-        let education = JSON.parse(profile.educations)
+        const profile = await Profile.findOne({where: {user_id: id}, attributes: ['position','educations']})
+        let education = JSON.parse(profile?.educations)
         education = education?.length > 0 ? education[education.length-1].title : '-'
 
         // get room data
-        const {data: rooms} = await axios.get(`http://localhost:5004/api/rooms?user_id=${id}`)
+        const {data: rooms} = await axios.get(`http://localhost:5003/api/rooms?user_id=${id}`)
         
         let company_id = rooms.data.filter(e => e.parent_id == null)[0]?.id
         let departments = rooms.data.filter(e => e.type == 'G' && e.parent_id == company_id)
-        let superior = await User.findByPk(departments[0].user2_id)
+        let superior = await User.findByPk(departments[0]?.user2_id)
 
         const data = {
             id: user.id,
