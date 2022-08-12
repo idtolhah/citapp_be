@@ -7,9 +7,9 @@ import colors from 'colors'
 import morgan from 'morgan'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
 import { connectDB, syncDB } from './config/db.js'
-import userRoutes from './routes/userRoutes.js'
-import profileRoutes from './routes/profileRoutes.js'
+import categoryRoutes from './routes/categoryRoutes.js'
 import peopleRoutes from './routes/peopleRoutes.js'
+import stepRoutes from './routes/stepRoutes.js'
 import cookieParser from 'cookie-parser'
 
 const startServer = async () => {
@@ -23,12 +23,7 @@ const startServer = async () => {
   const corsOptions = {
     origin: [
       'http://localhost:3000', 
-      'http://localhost:3001',
-      'http://localhost:3002',
-      'http://localhost:3003',
-      'http://localhost:3004',
       'http://localhost:3005',
-      'http://localhost:3006',
     ],
     methods:["GET" , "POST" , "PUT", "DELETE"],
     credentials: true,
@@ -40,9 +35,9 @@ const startServer = async () => {
   app.use(express.urlencoded({limit: '10mb'}))
   app.use(cookieParser());
 
-  app.use('/api/users', userRoutes)
-  app.use('/api/profiles', profileRoutes)
+  app.use('/api/categories', categoryRoutes)
   app.use('/api/people', peopleRoutes)
+  app.use('/api/steps', stepRoutes)
   app.get('/', (_, res) => res.send('API is running....'))
   
   app.use(notFound)

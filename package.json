@@ -1,7 +1,7 @@
 {
-  "name": "auth",
+  "name": "citapp",
   "version": "1.0.0",
-  "description": "Auth Backend",
+  "description": "CitApp Backend",
   "main": "index.mjs",
   "type": "module",
   "scripts": {

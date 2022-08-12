@@ -1,15 +1,14 @@
 import express from 'express'
-import { getPeople, getPersonById, getPositions } from '../controllers/peopleController.js'
+import { getPeople, getPeopleById, putPeople } from '../controllers/peopleController.js'
 const router = express.Router()
-import { protect } from '../middleware/authMiddleware.js'
 
 router.route('/')
-  .get(getPeople)
-  
-router.route('/positions')
-.get(getPositions)
+    .get(getPeople)
 
 router.route('/:id')
-  .get(getPersonById)
+    .get(getPeopleById)
+
+router.route('/:id')
+    .put(putPeople)
 
 export default router

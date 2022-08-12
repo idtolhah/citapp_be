@@ -1,9 +1,11 @@
 import dotenv from 'dotenv'
 import db, { connectDB } from './config/db.js'
-import User from './models/userModel.js'
-import users from './data/users.js'
-import Profile from './models/profileModel.js'
-import profiles from './data/profiles.js'
+import Category from './models/categoryModel.js'
+import categories from './data/categories.js'
+import People from './models/peopleModel.js'
+import people from './data/people.js'
+import Step from './models/stepModel.js'
+import steps from './data/steps.js'
 
 dotenv.config()
 connectDB()
@@ -15,8 +17,9 @@ const importData = async () => {
     await db.query("SET global max_allowed_packet=1000000000;", null, {})
 
     // Master
-    await User.bulkCreate(users)
-    await Profile.bulkCreate(profiles)
+    await Category.bulkCreate(categories)
+    await People.bulkCreate(people)
+    await Step.bulkCreate(steps)
     
     console.log('All dummy data Imported!')
 
@@ -31,7 +34,7 @@ const destroyData = async () => {
   try {
     await db.query('SET FOREIGN_KEY_CHECKS = 0', null, {})
 
-    await User.destroy({where: {}, truncate: { cascade: true }})    
+    // await User.destroy({where: {}, truncate: { cascade: true }})    
     console.log('Master Data Destroyed!')
 
     await db.query('SET FOREIGN_KEY_CHECKS = 1', null, {})

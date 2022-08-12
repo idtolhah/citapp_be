@@ -1,125 +1,79 @@
-import axios from 'axios'
-import db from '../config/db.js'
 import asyncHandler from 'express-async-handler'
-import { DATA_LOADED, FAILED, SUCCESS } from '../config/constants.js'
-import Profile from '../models/profileModel.js'
-import User from '../models/userModel.js'
-const Op = db.Sequelize.Op;
+import { SUCCESS, DATA_LOADED, FAILED, DATA_UPDATED  } from '../config/constants.js'
+import People from "../models/peopleModel.js"
+import Step from '../models/stepModel.js'
 
 // @desc    Get people
-// @route   GET /api/people?position={position}&sortby={sortby}&sortdirection={sortdirection}&keyword={sortdirection}
-// @access  Private
+// @route   GET /api/people?category_id={id}
+// @access  Public
 const getPeople = asyncHandler(async (req, res) => {
     try {
-        // filter
-        var condition = {}
-        if(req.query.position) condition.position = req.query.position
-
-        // sort
-        var sortBy = 'createdAt'
-        var sortDirection = 'ASC'
-        if(req.query.sortby) sortBy = req.query.sortby
-        if(req.query.sortdirection) sortDirection = req.query.sortdirection
-        var sort = [sortBy, sortDirection]
-
-        const users = await User.findAll({
-            where: {
-                name: {
-                  [Op.like]: `%${req.query.name}%`
-                }
-            },
-            attributes: ['id', 'name', 'createdAt'],
-            include: [
-                { 
-                    model: Profile, 
-                    where: condition, 
-                    attributes: ['position'], 
-                },
-            ],
-            order: [sort],
-        })
-    
-        res.status(200)
-        res.json({
-            status: SUCCESS,
-            message: DATA_LOADED,
-            data: users,
-        })
-    } catch(err) {
-        res.status(401)
-        res.json({
-            status: FAILED,
-            message: "" + err,
-            data: null,
-        })
-    }
-})
-
-// @desc    Get positions
-// @route   GET /api/people/positions
-// @access  Private
-const getPositions = asyncHandler(async (req, res) => {
-    try {        
-        const positions = await Profile.findAll({
-            attributes: ['position'], 
-            group: ['position'],
-            order: [ ['position', 'ASC'] ]
-        })
-    
-        res.status(200)
-        res.json({
-            status: SUCCESS,
-            message: DATA_LOADED,
-            data: positions,
-        })
-    } catch(err) {
-        res.status(401)
-        res.json({
-            status: FAILED,
-            message: "" + err,
-            data: null,
-        })
-    }
-})
-
-// @desc    Get person by id
-// @route   GET /api/people/{id}
-// @access  Private
-const getPersonById = asyncHandler(async (req, res) => {
-    try {
-        const id = req.params.id
-
-        // get user data
-        const user = await User.findByPk(id, {attributes: ['id', 'name', 'email', 'createdAt']})
-
-        // get profile data
-        const profile = await Profile.findOne({where: {user_id: id}, attributes: ['position','educations']})
-        let education = JSON.parse(profile?.educations)
-        education = education?.length > 0 ? education[education.length-1].title : '-'
-
-        // get room data
-        const {data: rooms} = await axios.get(`http://localhost:5003/api/rooms?user_id=${id}`)
+        const data = req.query
         
-        let company_id = rooms.data.filter(e => e.parent_id == null)[0]?.id
-        let departments = rooms.data.filter(e => e.type == 'G' && e.parent_id == company_id)
-        let superior = await User.findByPk(departments[0]?.user2_id)
+        const condition = {}
+        if(data.category_id) condition.category_id = data.category_id
 
-        const data = {
-            id: user.id,
-            name: user.name,
-            position: profile.position,
-            email: user.email,
-            createdAt: user.createdAt,
-            education,
-            department: departments[0]?.name || '-',
-            superior: superior?.name || '-',
-        }
+        const people = await People.findAll({
+            where: condition,
+            attributes: ['id', 'name', 'job', 'place', 'category_id'],
+        })
     
         res.status(200)
         res.json({
             status: SUCCESS,
             message: DATA_LOADED,
-            data,
+            data: people,
+        })
+    } catch(err) {
+        res.status(401)
+        res.json({
+            status: FAILED,
+            message: "" + err,
+            data: null,
+        })
+    }
+})
+
+// @desc    Get people and steps by id
+// @route   GET /api/people/{id}
+// @access  Public
+const getPeopleById = asyncHandler(async (req, res) => {
+    try {
+        const { id } = req.params
+
+        const people = await People.findByPk(id, {include: {model: Step, as: 'steps'}})
+    
+        res.status(200)
+        res.json({
+            status: SUCCESS,
+            message: DATA_LOADED,
+            data: people,
+        })
+    } catch(err) {
+        res.status(401)
+        res.json({
+            status: FAILED,
+            message: "" + err,
+            data: null,
+        })
+    }
+})
+
+// @desc    Update people
+// @route   PUT /api/people/{id}
+// @access  Private
+const putPeople = asyncHandler(async (req, res) => {
+    try {
+        const { id } = req.params
+        const data = req.body
+
+        const people = await People.update(data, {where: {id}})
+    
+        res.status(200)
+        res.json({
+            status: SUCCESS,
+            message: DATA_UPDATED,
+            data: people,
         })
     } catch(err) {
         res.status(401)
@@ -133,6 +87,6 @@ const getPersonById = asyncHandler(async (req, res) => {
 
 export {
     getPeople,
-    getPersonById,
-    getPositions,
+    getPeopleById,
+    putPeople,
 }
