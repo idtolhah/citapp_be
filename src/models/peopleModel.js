@@ -25,6 +25,11 @@ const People = db.define('people', {
         type: DataTypes.STRING(50),
         allowNull: true,
     },
+    vote: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0,
+    },
     status: {
         type: DataTypes.INTEGER,
         allowNull: true,

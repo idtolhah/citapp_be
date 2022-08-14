@@ -22,8 +22,9 @@ const startServer = async () => {
   
   const corsOptions = {
     origin: [
-      'http://localhost:3000', 
+      'http://localhost:3000',
       'http://localhost:3005',
+      'http://localhost:5001',
     ],
     methods:["GET" , "POST" , "PUT", "DELETE"],
     credentials: true,

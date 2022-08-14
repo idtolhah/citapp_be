@@ -9,13 +9,14 @@ const createStep = asyncHandler(async (req, res) => {
     try {
         const data = req.body
 
-        const newStep = await Step.create(data)
+        await Step.create(data)
+        const steps = await Step.findAll({where: {people_id: data.people_id}})
     
         res.status(200)
         res.json({
             status: SUCCESS,
             message: DATA_INSERTED,
-            data: newStep,
+            data: steps,
         })
     } catch(err) {
         res.status(401)
@@ -35,13 +36,14 @@ const updateStep = asyncHandler(async (req, res) => {
         const { id } = req.params
         const data = req.body
 
-        const updatedStep = await Step.update(data, {where: {id}})
+        await Step.update(data, {where: {id}})
+        const steps = await Step.findAll({where: {people_id: data.people_id}})
     
         res.status(200)
         res.json({
             status: SUCCESS,
             message: DATA_UPDATED,
-            data: updatedStep,
+            data: steps,
         })
     } catch(err) {
         res.status(401)
@@ -60,13 +62,18 @@ const deleteStep = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params
 
-        const deletedStep = await Step.destroy({where: {id}})
+        const step = await Step.findByPk(id)
+        let steps
+        if(step) {
+            await Step.destroy({where: {id}})
+            steps = await Step.findAll({where: {people_id: step.people_id}})
+        }
     
         res.status(200)
         res.json({
             status: SUCCESS,
             message: DATA_DELETED,
-            data: deletedStep,
+            data: steps,
         })
     } catch(err) {
         res.status(401)
