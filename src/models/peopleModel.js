@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize';
 import db from '../config/db.js';
 import Category from './categoryModel.js';
 import Step from './stepModel.js';
+import Vote from './voteModel.js';
 
 const { DataTypes } = Sequelize;
 
@@ -45,6 +46,11 @@ People.belongsTo(Category, {
 
 People.hasMany(Step, {
     as: 'steps',
+    foreignKey: 'people_id'
+})
+
+People.hasMany(Vote, {
+    as: 'votes',
     foreignKey: 'people_id'
 })
 

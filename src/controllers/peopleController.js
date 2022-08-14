@@ -3,6 +3,7 @@ import { SUCCESS, DATA_LOADED, FAILED, DATA_UPDATED  } from '../config/constants
 import { Op } from 'sequelize'
 import People from "../models/peopleModel.js"
 import Step from '../models/stepModel.js'
+import Vote from '../models/voteModel.js'
 
 // @desc    Get people
 // @route   GET /api/people?category_id={id}&status={status}
@@ -19,6 +20,11 @@ const getPeople = asyncHandler(async (req, res) => {
             where: condition,
             attributes: ['id', 'name', 'job', 'place', 'vote', 'category_id', 'status', 'createdAt'],
         })
+
+        for (let i = 0; i < people.length; i++) {
+            const votesCount = await Vote.count({where: {people_id: people[i].id}})
+            people[i].vote = votesCount
+        }
     
         res.status(200)
         res.json({
@@ -44,6 +50,9 @@ const getPeopleById = asyncHandler(async (req, res) => {
         const { id } = req.params
 
         const people = await People.findByPk(id, {include: {model: Step, as: 'steps'}})
+
+        const votesCount = await Vote.count({where: {people_id: id}}) 
+        people.vote = votesCount
     
         res.status(200)
         res.json({
@@ -90,34 +99,6 @@ const putPeople = asyncHandler(async (req, res) => {
     }
 })
 
-// @desc    Update people vote
-// @route   PUT /api/people/{id}/vote/{vote}
-// @access  Private
-const votePeople = asyncHandler(async (req, res) => {
-    try {
-        const { id, vote } = req.params
-        const increment = vote == 'up' ? 1 : -1
-
-        let people = await People.findByPk(id, {attributes: ['vote']})
-        await People.update({vote: people.vote + increment}, {where: {id}})
-        people = await People.findByPk(id, {attributes: ['id','vote']})
-        
-        res.status(200)
-        res.json({
-            status: SUCCESS,
-            message: DATA_UPDATED,
-            data: people,
-        })
-    } catch(err) {
-        res.status(401)
-        res.json({
-            status: FAILED,
-            message: "" + err,
-            data: null,
-        })
-    }
-})
-
 // @desc    Create people
 // @route   POST /api/people
 // @access  Private
@@ -147,6 +128,5 @@ export {
     getPeople,
     getPeopleById,
     putPeople,
-    votePeople,
     postPeople,
 }

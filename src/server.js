@@ -10,6 +10,7 @@ import { connectDB, syncDB } from './config/db.js'
 import categoryRoutes from './routes/categoryRoutes.js'
 import peopleRoutes from './routes/peopleRoutes.js'
 import stepRoutes from './routes/stepRoutes.js'
+import voteRoutes from './routes/voteRoutes.js'
 import cookieParser from 'cookie-parser'
 
 const startServer = async () => {
@@ -39,6 +40,7 @@ const startServer = async () => {
   app.use('/api/categories', categoryRoutes)
   app.use('/api/people', peopleRoutes)
   app.use('/api/steps', stepRoutes)
+  app.use('/api/votes', voteRoutes)
   app.get('/', (_, res) => res.send('API is running....'))
   
   app.use(notFound)

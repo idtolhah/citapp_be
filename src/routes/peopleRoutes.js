@@ -1,5 +1,5 @@
 import express from 'express'
-import { getPeople, getPeopleById, postPeople, putPeople, votePeople } from '../controllers/peopleController.js'
+import { getPeople, getPeopleById, postPeople, putPeople } from '../controllers/peopleController.js'
 const router = express.Router()
 import { protect } from '../middleware/authMiddleware.js'
 
@@ -10,8 +10,5 @@ router.route('/')
 router.route('/:id')
     .get(getPeopleById)
     .put(protect, putPeople)
-
-router.route('/:id/vote/:vote')
-    .put(protect, votePeople)
 
 export default router
