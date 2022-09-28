@@ -3,9 +3,10 @@ import db, { connectDB } from './config/db.js'
 import Category from './models/categoryModel.js'
 import categories from './data/categories.js'
 import People from './models/peopleModel.js'
-import people from './data/people.js'
+// import people from './data/people.js'
 import Step from './models/stepModel.js'
-import steps from './data/steps.js'
+// import steps from './data/steps.js'
+import { people, steps } from './data/people_dynamic.js'
 
 dotenv.config()
 connectDB()
@@ -17,7 +18,7 @@ const importData = async () => {
     await db.query("SET global max_allowed_packet=1000000000;", null, {})
 
     // Master
-    await Category.bulkCreate(categories)
+    // await Category.bulkCreate(categories)
     await People.bulkCreate(people)
     await Step.bulkCreate(steps)
     

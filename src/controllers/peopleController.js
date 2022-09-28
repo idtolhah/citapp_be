@@ -4,33 +4,41 @@ import { Op } from 'sequelize'
 import People from "../models/peopleModel.js"
 import Step from '../models/stepModel.js'
 import Vote from '../models/voteModel.js'
+import Category from '../models/categoryModel.js'
 
 // @desc    Get people
-// @route   GET /api/people?category_id={id}&status={status}
+// @route   GET /api/people?category_id={id}&status={status}&page{page}&perpage={perpage}
 // @access  Public
 const getPeople = asyncHandler(async (req, res) => {
     try {
         const data = req.query
+        const page = parseInt(req.query.page) || 1
+        const perPage = parseInt(req.query.perpage) || 10
         
         const condition = {}
         if(data.category_id) condition.category_id = data.category_id
         if(data.status) condition.status = data.status
 
-        const people = await People.findAll({
+        const people = await People.findAndCountAll({
             where: condition,
+            limit: perPage,
+            offset: (page - 1) * perPage,
             attributes: ['id', 'name', 'job', 'place', 'vote', 'category_id', 'status', 'createdAt'],
         })
 
-        for (let i = 0; i < people.length; i++) {
-            const votesCount = await Vote.count({where: {people_id: people[i].id}})
-            people[i].vote = votesCount
+        for (let i = 0; i < people.rows.length; i++) {
+            const votesCount = await Vote.count({where: {people_id: people.rows[i].id}})
+            people.rows[i].vote = votesCount
         }
     
         res.status(200)
         res.json({
             status: SUCCESS,
             message: DATA_LOADED,
-            data: people,
+            data: people.rows,
+            total: people.count,
+            page,
+            last_page: Math.ceil(people.count / perPage)
         })
     } catch(err) {
         res.status(401)
@@ -70,6 +78,11 @@ const getPeopleById = asyncHandler(async (req, res) => {
     }
 })
 
+// @desc function to check if its numeric or not
+function isNumeric(value) {
+    return /^-?\d+$/.test(value);
+}
+
 // @desc    Update people
 // @route   PUT /api/people/{id}
 // @access  Private
@@ -79,6 +92,10 @@ const putPeople = asyncHandler(async (req, res) => {
         const { id } = req.params
         const data = req.body
 
+        if(!isNumeric(data.category_id)) {
+            const category = await Category.create({title: data.category_id})
+            data.category_id = category.id
+        }
         const people = await People.update(data, {where: {id}})
         
         // await t.commit()
