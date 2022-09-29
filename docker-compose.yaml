@@ -1,37 +1,37 @@
 version: '3.7'
 services:
-  # smartdmi_frontend:
-  #   # build: 
-  #   #   context: .
-  #   #   dockerfile: ../sm_ems_fe/Dockerfile
-  #   # volumes:
-  #   #   - ../sm_ems_fe:/app
-  #   image: tolhah/smartdmi_frontend:1.0.0
-  #   container_name: smartdmi_frontend
-  #   ports:
-  #     - 4000:4000
-  #   depends_on:
-  #     - smartdmi_backend
+  citapp_frontend:
+    build: 
+      context: .
+      dockerfile: ../citapp/Dockerfile
+    volumes:
+      - ../citapp:/app
+    image: tolhah/citapp_frontend:1.0.0
+    container_name: citapp_frontend
+    ports:
+      - 4000:4000
+    depends_on:
+      - citapp_backend
 
-  # smartdmi_backend:
-  #   # build: .
-  #   # volumes:
-  #   #   - .:/app
-  #   image: tolhah/smartdmi_backend:1.0.0
-  #   container_name: smartdmi_backend
-  #   ports:
-  #     - 5001:5001
-  #   depends_on:
-  #     - smartdmi_db
+  citapp_backend:
+    build: .
+    volumes:
+      - .:/app
+    image: tolhah/citapp_backend:1.0.0
+    container_name: citapp_backend
+    ports:
+      - 5001:5001
+    depends_on:
+      - citapp_db
 
-  smartdmi_db:
+  citapp_db:
     image: mariadb:10.5.8
-    container_name: smartdmi_db
+    container_name: citapp_db
     restart: always
     environment:
-      MYSQL_DATABASE: ems
-      MYSQL_PASSWORD: P@ssw0rd123!@#
-      MYSQL_ROOT_PASSWORD: P@ssw0rd123!@#
+      MYSQL_DATABASE: 00_citapp
+      MYSQL_PASSWORD: 
+      MYSQL_ROOT_PASSWORD: 
     volumes:
       - .dbdata:/var/lib/mysql
     ports:
